@@ -36,7 +36,7 @@ export default function Login() {
       navigate("/home");
     },
 
-    onError: (error) => {
+    onError: (error: any) => {
       alert(error.response?.data?.message || "Login failed");
     },
   });

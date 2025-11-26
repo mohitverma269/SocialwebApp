@@ -76,7 +76,7 @@ export default function Register() {
             placeholder="John"
             required
             {...register("firstName")}
-            error={errors.firstName?.message}
+            error={errors.firstName?.message || ""}
           />
 
           <CommonInput
@@ -84,7 +84,7 @@ export default function Register() {
             placeholder="Cena"
             required
             {...register("lastName")}
-            error={errors.lastName?.message}
+            error={errors.lastName?.message || ""}
           />
           <CommonInput
             label="Age"
@@ -92,7 +92,7 @@ export default function Register() {
             required
             type="number"
             {...register("age")}
-            error={errors.age?.message}
+            error={errors.age?.message || ""}
           />
 
 
@@ -102,7 +102,7 @@ export default function Register() {
             type="email"
             required
             {...register("email")}
-            error={errors.email?.message}
+            error={errors.email?.message || ""}
           />
 
           <CommonInput
@@ -111,7 +111,7 @@ export default function Register() {
             type="tel"
             required
             {...register("mobile")}
-            error={errors.mobile?.message}
+            error={errors.mobile?.message || ""}
           />
 
           <CommonInput
@@ -120,7 +120,7 @@ export default function Register() {
             placeholder="••••••••"
             required
             {...register("password")}
-            error={errors.password?.message}
+            error={errors.password?.message || ""}
           />
           <div className="mb-5">
             <label className="block mb-1 text-gray-600 font-medium">
@@ -132,9 +132,9 @@ export default function Register() {
               {...register("image")}
               className="w-full text-gray-600"
             />
-            {errors.image && (
-              <p className="text-red-500 text-sm">{errors.image.message}</p>
-            )}
+          {typeof errors.image?.message === "string" && (
+  <p className="text-red-500 text-sm">{errors.image.message}</p>
+)}
           </div>
 
           <CommonInput
@@ -143,7 +143,7 @@ export default function Register() {
             placeholder="••••••••"
             required
             {...register("confirmPassword")}
-            error={errors.confirmPassword?.message}
+            error={errors.confirmPassword?.message || ""}
           />
 
           <CommonButton title="Sign Up" type="submit" />

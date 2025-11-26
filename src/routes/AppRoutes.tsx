@@ -8,7 +8,6 @@ import Register from "../pages/unauth/Register";
 import ForgotPassword from "../pages/unauth/ForgotPassword";
 import ResetPassword from "../pages/unauth/ResetPassword";
 
-import ProtectedRoute from "./ProtectedRoute";
 import Home from "../pages/auth/Home";
 
 export default function AppRoutes() {
