@@ -1,55 +1,54 @@
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
+import CommonInput from '../../components/CommonInput';
+import CommonButton from '../../components/CommonButton';
 
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import CommonInput from "../../components/CommonInput";
-import CommonButton from "../../components/CommonButton";
-
-import { LoginSchema } from "./schema/login.schema";
-import type { LoginFormType } from "./schema/login.schema";
-import { useMutation } from "@tanstack/react-query";
-import { loginApi } from "../../api/auth.api";
+import { LoginSchema } from './schema/login.schema';
+import type { LoginFormType } from './schema/login.schema';
+import { useMutation } from '@tanstack/react-query';
+import { loginApi } from '../../api/auth.api';
+import { useAuth } from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✔ Correct
 
   const {
     register,
     handleSubmit,
-
     formState: { errors },
   } = useForm<LoginFormType>({
     resolver: zodResolver(LoginSchema),
   });
 
-  // ❗ Hooks always at TOP level
   const loginMutation = useMutation({
     mutationFn: loginApi,
-
-    onSuccess: (data) => {
-      alert("Login Successful!");
-
-      console.log("API Response: ", data);
-
-      navigate("/home");
+    onSuccess: (res) => {
+      console.log('Login Success:', res);
+      const user = res.data;
+      const token = res.token;
+      login(user, token);
+      toast.success('Login Successful 🎉', { toastId: 'LOGIN_SUCCESS' });
+      navigate("/");
     },
-
     onError: (error: any) => {
-      alert(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || 'Login Failed ❌', {
+        toastId: 'LOGIN_ERROR',
+      });
     },
   });
 
   const onSubmit = (data: LoginFormType) => {
-    loginMutation.mutate(data);  // ✔ This is correct
-    // navigate("/home");
- 
+    if (!loginMutation.isPending) {
+      loginMutation.mutate(data);
+    }
   };
 
   return (
     <div className="flex flex-wrap w-full min-h-screen">
-
       {/* Left Section - Image */}
       <div className="flex flex-1 min-h-[300px] justify-center items-center hidden xs:flex">
         <img
@@ -75,7 +74,7 @@ export default function Login() {
             placeholder="you@example.com"
             required
             type="email"
-            {...register("email")}
+            {...register('email')}
           />
           {errors.email && (
             <p className="text-red-500 text-sm -mt-4 mb-3">
@@ -89,7 +88,8 @@ export default function Login() {
             placeholder="••••••••"
             required
             type="password"
-            {...register("password")}
+            {...register('password')}
+            disabled={loginMutation.isPending}
           />
           {errors.password && (
             <p className="text-red-500 text-sm -mt-4 mb-3">
@@ -99,7 +99,7 @@ export default function Login() {
 
           {/* Forgot Password */}
           <div
-            onClick={() => navigate("/forgot-password")}
+            onClick={() => navigate('/forgot-password')}
             className="text-right mb-5 cursor-pointer"
           >
             <span className="text-green-600 hover:text-green-800 text-sm">
@@ -108,14 +108,18 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <CommonButton title="Login" type="submit"  />
+          <CommonButton
+            title={loginMutation.isPending ? 'Please wait...' : 'Login'}
+            type="submit"
+            disabled={loginMutation.isPending}
+          />
 
           {/* Sign Up Link */}
           <p
-            onClick={() => navigate("/register")}
+            onClick={() => navigate('/register')}
             className="text-center text-sm text-gray-600 mt-6 cursor-pointer"
           >
-            Don’t have an account?{" "}
+            Don’t have an account?{' '}
             <span className="text-green-600 font-semibold">Sign Up</span>
           </p>
         </form>

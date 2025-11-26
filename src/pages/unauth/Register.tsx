@@ -9,6 +9,7 @@ import { RegisterSchema } from "./schema/register.schema";
 import type { RegisterFormType } from "./schema/register.schema";
 import { useMutation } from "@tanstack/react-query";
 import { registerApi } from "../../api/auth.api";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -24,16 +25,15 @@ export default function Register() {
   const registerMutation = useMutation({
     mutationFn: registerApi,
     onSuccess: () => {
-      alert("Register Successful 🎉");
-      navigate("/login");
+      toast.success("🎉 Registered Successfully!");
+      setTimeout(() => navigate("/login"), 1500); // Smooth redirect
     },
     onError: (error: any) => {
-      alert(error?.response?.data?.message || "Registration Failed");
+      toast.error(error?.response?.data?.message || "Registration Failed ❌");
     },
   });
-  const onSubmit = (data: RegisterFormType) => {
-    console.log("Form Data before submit:", JSON.stringify(data));
 
+  const onSubmit = (data: RegisterFormType) => {
     const formData = new FormData();
     formData.append("firstName", data.firstName);
     formData.append("lastName", data.lastName);
@@ -43,10 +43,7 @@ export default function Register() {
     formData.append("age", data.age);
 
     if (data.image?.[0]) {
-      console.log("Image picked:", data.image[0]); // LOG to confirm
       formData.append("image", data.image[0]);
-    } else {
-      console.log("No image selected");
     }
 
     registerMutation.mutate(formData);
@@ -54,7 +51,6 @@ export default function Register() {
 
   return (
     <div className="flex flex-wrap w-full min-h-screen">
-
       <div className="flex flex-1 min-h-[300px] justify-center items-center hidden xs:flex">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png"
@@ -71,30 +67,37 @@ export default function Register() {
             Create Your Account
           </h2>
 
-          <CommonInput
-            label="First Name"
-            placeholder="John"
-            required
-            {...register("firstName")}
-            error={errors.firstName?.message || ""}
-          />
+<div className="flex gap-4 w-full">
+  <div className="flex-1">
+    <CommonInput
+      label="First Name"
+      placeholder="John"
+      required
+      {...register("firstName")}
+      error={errors.firstName?.message}
+    />
+  </div>
 
-          <CommonInput
-            label="Last Name"
-            placeholder="Cena"
-            required
-            {...register("lastName")}
-            error={errors.lastName?.message || ""}
-          />
+  <div className="flex-1">
+    <CommonInput
+      label="Last Name"
+      placeholder="Cena"
+      required
+      {...register("lastName")}
+      error={errors.lastName?.message}
+    />
+  </div>
+  
+</div>
+
           <CommonInput
             label="Age"
-            placeholder="00"
-            required
+            placeholder="23"
             type="number"
+            required
             {...register("age")}
-            error={errors.age?.message || ""}
+            error={errors.age?.message}
           />
-
 
           <CommonInput
             label="Email"
@@ -102,16 +105,16 @@ export default function Register() {
             type="email"
             required
             {...register("email")}
-            error={errors.email?.message || ""}
+            error={errors.email?.message}
           />
 
           <CommonInput
-            label="Mobile Number"
+            label="Mobile"
             placeholder="9876543210"
             type="tel"
             required
             {...register("mobile")}
-            error={errors.mobile?.message || ""}
+            error={errors.mobile?.message}
           />
 
           <CommonInput
@@ -120,22 +123,8 @@ export default function Register() {
             placeholder="••••••••"
             required
             {...register("password")}
-            error={errors.password?.message || ""}
+            error={errors.password?.message}
           />
-          <div className="mb-5">
-            <label className="block mb-1 text-gray-600 font-medium">
-              Upload Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              {...register("image")}
-              className="w-full text-gray-600"
-            />
-          {typeof errors.image?.message === "string" && (
-  <p className="text-red-500 text-sm">{errors.image.message}</p>
-)}
-          </div>
 
           <CommonInput
             label="Confirm Password"
@@ -143,10 +132,29 @@ export default function Register() {
             placeholder="••••••••"
             required
             {...register("confirmPassword")}
-            error={errors.confirmPassword?.message || ""}
+            error={errors.confirmPassword?.message}
           />
 
-          <CommonButton title="Sign Up" type="submit" />
+          {/* File Upload */}
+          <div className="mb-5">
+            <label className="block mb-1 text-gray-600 font-medium">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("image")}
+              className="w-full text-gray-600"
+            />
+            {typeof errors.image?.message === "string" && (<p className="text-red-500 text-sm">{errors.image.message}</p>)}
+          </div>
+
+          {/* Disable button when API loading */}
+          <CommonButton
+            title={registerMutation.isPending ? "Processing..." : "Sign Up"}
+            type="submit"
+            disabled={registerMutation.isPending}
+          />
 
           <p
             onClick={() => navigate("/login")}
@@ -155,7 +163,6 @@ export default function Register() {
             Already have an account?
             <span className="text-green-600 font-semibold"> Login</span>
           </p>
-
         </form>
       </div>
     </div>

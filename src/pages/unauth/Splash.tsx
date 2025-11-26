@@ -3,20 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Splash() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
+
+    const navigate = useNavigate();
+  const { user, token } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (user) {
-        navigate("/home");   // logged in → home
+      if (token && user) {
+        navigate("/home");
       } else {
-        navigate("/login");  // not logged in → login
+        navigate("/login");
       }
-    }, 2000);
+    }, 2000); // 2 sec splash delay
 
     return () => clearTimeout(timer);
-  }, [user, navigate]);
+  }, [token, user, navigate]);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (user) {
+  //       navigate("/home");   // logged in → home
+  //     } else {
+  //       navigate("/login");  // not logged in → login
+  //     }
+  //   }, 2000);
+
+  //   return () => clearTimeout(timer);
+  // }, [user, navigate]);
 
 
   return (
@@ -32,7 +45,7 @@ export default function Splash() {
 
         {/* App Name */}
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          MyApp
+          Social Media Web App
         </h1>
 
       </div>
