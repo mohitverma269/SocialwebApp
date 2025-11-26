@@ -36,16 +36,15 @@ export default function Login() {
       navigate("/home");
     },
 
-    onError: (error: any) => {
+    onError: (error) => {
       alert(error.response?.data?.message || "Login failed");
     },
   });
 
   const onSubmit = (data: LoginFormType) => {
-    navigate("/home");
-    // console.log("Login Data:", data);
-    // alert("Login Data:" + JSON.stringify(data)); 
-    // loginMutation.mutate(data);  // ✔ This is correct
+    loginMutation.mutate(data);  // ✔ This is correct
+    // navigate("/home");
+ 
   };
 
   return (
@@ -109,7 +108,7 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <CommonButton title="Login" type="submit" />
+          <CommonButton title="Login" type="submit"  />
 
           {/* Sign Up Link */}
           <p

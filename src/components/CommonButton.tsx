@@ -1,5 +1,3 @@
-import React from "react";
-
 interface BtnProps {
   title: string;
   onClick?: () => void;
